@@ -1,0 +1,231 @@
+/*ALBA ZALLI
+POMODORO TIMER SITE
+DEC 26 2025 */
+
+
+
+/* import fontawesome library for icons */
+@import url('https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+
+/* text format */
+
+p {
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+h2 {
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: bold;
+}
+
+.top-bar {
+    transform: translateY(2vh);
+}
+
+.theme-btn {
+    text-align: center;
+    color: #000000;
+    border: 1px solid #000000;
+    background-color: transparent;
+    border-radius: 5px;
+    padding: 5px;
+    transition: transform 0.15s ease;
+}
+
+.modal-content {
+    color: #000000;
+}
+
+/* overlay layer */
+button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.2);
+  mix-blend-mode: overlay;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+button:hover::after {
+  opacity: 1;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+#timer {
+     font-size: 100px;
+     font-family: Arial, Helvetica, sans-serif;
+}
+
+/* flex container */
+.timer-container {
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      margin: 0;
+      padding: 0;
+
+   }
+
+
+/*container that holds chevron alongside buttons*/
+.chevron-container {
+    display: flex;
+    flex-direction: column;
+      position: relative;
+      width: 30px;
+}
+
+.main-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden
+}
+
+/*chevron logic*/
+#chevron {
+    font-size: 30px;
+    transition: transform 0.3s ease;
+    position: absolute;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.buttons-container{
+  display: grid;
+  grid-template-columns: auto 40px;
+  align-items: center;
+  gap: 12px;
+  padding: 100px;
+}
+
+.column-item1 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  left-margin: 100px;
+}
+
+.column-item2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.column-item3 {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  left-margin: 100px;
+}
+
+/* Smooth transition between the analytics showing */
+.analytics {
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.analytics.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  width: min(90%, 150vh);
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.modal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal.show .modal-content {
+  transform: scale(1);
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 1.4rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* theme switch handling */
+:root {
+  --bg: #f5f5f5;
+  --text: #111;
+}
+
+/* THEMES */
+body.simple {
+  --bg: #f5f5f5;
+  --text: #111;
+}
+
+body.pink {
+  --bg: #ffe4ee;
+  --text: #5a1c3c;
+}
+
+body.deep {
+  --bg: #0f172a;
+  --text: #e5e7eb;
+}
+
+/* APPLY */
+body {
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+button {
+    text-align: center;
+    color: var(--text);
+    border: 1px solid var(--text);
+    background-color: transparent;
+    border-radius: 5px;
+    padding: 5px;
+    transition: transform 0.15s ease;
+}
+
+
+
+
+
+

@@ -1,0 +1,373 @@
+<!-- ALBA ZALLI
+POMODORO TIMER SITE
+DEC 26 2025 -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pomodoro Timer</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<div class="top-bar">
+    <button id="focus-md"> Focus</button>
+    <button id="analytics-md"> Analytics</button>
+    <button id="themes"> Themes</button>
+    <button id="info" class="fa fa-info"></button>
+</div>
+
+<div class="main-container">
+    <div class="buttons-container">
+        <div class="column-item1">
+            <p class="analytics" id="focus-time"> Focus time: <br> 0m00s </p>
+            <p class="analytics" id="msg"> You got this! </p>
+            <p class="analytics" id="total-time"> Total time: <br> 0m00s </p>
+        </div>
+    </div>
+    <div class="timer-container">
+        <p id="cycle-count">Cycle count: 0 </p>
+        <p id="timer"> 25m 00s </p>
+        <div>
+            <button id="actionButton" class="start-button"> Start</button>
+            <button class="reset-button" onclick="resetTimer()"> Reset</button>
+        </div>
+    </div>
+
+    <div class="buttons-container">
+        <div class="column-item3">
+            <button id="focus"> Focus</button>
+            <button id="short-b"> Short Break</button>
+            <button id="long-b"> Long Break</button>
+        </div>
+        <div class="column-item2">
+            <i id="chevron" class="fa fa-chevron-left"></i>
+        </div>
+    </div>
+
+    <!-- INFO MODAL -->
+    <div id="info-modal" class="modal hidden">
+        <div class="modal-content">
+            <button class="close-btn" id="close-info">×</button>
+
+            <h2>Info</h2>
+            <p>
+            The Pomodoro timer is a study method where someone focuses for 25 minutes, rests for 5 minutes, and continues this for 3 cycles. On the 4th cycle, focus is followed by a 15 minute break.
+             <br><br>This method is more efficient than self-paced breaks.
+                <br><br> More info is available <a href="https://en.wikipedia.org/wiki/Pomodoro_Technique">here</a>.
+            </p>
+        </div>
+    </div>
+
+    <!-- THEMES MODAL -->
+    <div id="themes-modal" class="modal hidden">
+        <div class="modal-content">
+            <button class="close-btn" id="close-themes">×</button>
+            <h2>Themes</h2>
+            <p>
+                <button class="theme-btn" id="simple-t"> Simple </button>
+                <button class="theme-btn" id="pink-t"> Pink </button>
+                <button class="theme-btn" id="deep-t"> Deep blue </button>
+            </p>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+       //SET TIMER MODES MODES
+       const MODES = {
+            focus: 25 * 60,        // 25 minutes
+            shortBreak: 5 * 60,   // 5 minutes
+            longBreak: 15 * 60    // 15 minutes
+            };
+
+            let currentMode = "focus";
+            let remaining = MODES.focus;
+
+       //SWITCH MODES
+       function switchMode(mode) {
+          clearInterval(x);
+          isRunning = false;
+          currentMode = mode;
+          remaining = MODES[mode];
+
+          const minutes = Math.floor(remaining / 60);
+          timerDisplay.innerHTML = `${minutes}m 00s`;
+
+          actionButton.textContent = "Start";
+        }
+
+
+        //CHEVRON MOVEMENT LOGIC
+        // set elements as constants
+        const chevron = document.getElementById("chevron");
+        const focusBtn = document.getElementById("focus");
+        const shortBtn = document.getElementById("short-b");
+        const longBtn = document.getElementById("long-b");
+        let activeButton = focusBtn;
+
+        // how to move chevron considering each active button
+        function chevronMove(){
+            if (activeButton == focusBtn){
+                switchMode("focus");
+                const rect = focusBtn.getBoundingClientRect();
+                const yCoor = rect.top;
+                chevron.style.transform = `translateY(${rect.top - chevron.parentElement.getBoundingClientRect().top + 10}px)`;
+            }
+            else if(activeButton == shortBtn){
+                switchMode("shortBreak");
+                const rect = shortBtn.getBoundingClientRect();
+                const yCoor = rect.top;
+                chevron.style.transform = `translateY(${rect.top - chevron.parentElement.getBoundingClientRect().top + 10}px)`;
+            }
+            else if(activeButton == longBtn){
+                switchMode("longBreak");
+                const rect = longBtn.getBoundingClientRect();
+                const yCoor = rect.top;
+                chevron.style.transform = `translateY(${rect.top - chevron.parentElement.getBoundingClientRect().top + 10}px)`;
+            }
+        }
+
+        //SWITCH BETWEEN BUTTON PRESSING TYPE
+        focusBtn.addEventListener("click", () => {
+            activeButton= focusBtn;
+          chevronMove();
+        });
+
+        shortBtn.addEventListener("click", () => {
+            activeButton = shortBtn;
+            chevronMove();
+        });
+
+        longBtn.addEventListener("click", () => {
+            activeButton = longBtn;
+            chevronMove();
+        });
+
+
+        //move chevron when page is resized
+        window.addEventListener("resize", () => {
+          chevronMove();
+        });
+
+        //move chevron to focus when page reload
+        window.addEventListener("load", () => {
+          activeButton= focusBtn;
+          chevronMove();
+        });
+
+        //TIMER LOGIC
+        //declare variables
+        let endTime;
+        let x;
+        let isRunning = false;
+        const timerDisplay = document.getElementById("timer");
+
+        //TIMER LOGIC
+        // start timer
+        function startFocus(){
+          clearInterval(x);
+          isRunning = true;
+
+          endTime = Date.now() + remaining * 1000;
+          lastTick = Date.now();
+
+          x = setInterval(function() {
+
+            remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+
+            var minutes = Math.floor(remaining / 60);
+            var seconds = remaining % 60;
+
+            //focus time counter
+            const now = Date.now();
+            const delta = (now - lastTick) / 1000; // seconds elapsed
+            lastTick = now;
+
+            if (!lastTick) {
+                lastTick = now;
+                return;
+            }
+
+            //incriment focus counter
+            if (currentMode === "focus" && isRunning) {
+              focusSeconds += delta;
+            }
+
+            // update focus display
+            const focusMin = Math.floor(focusSeconds / 60);
+            const focusSec = Math.floor(focusSeconds % 60);
+            document.getElementById("focus-time").innerHTML =
+            `Focus time: <br> ${focusMin}m ${focusSec < 10 ? "0" : ""}${focusSec}s`;
+
+            //increment total counter
+            if (isRunning) {
+                totalSeconds += delta;
+            }
+
+            // update total display
+            const totalMin = Math.floor(totalSeconds / 60);
+            const totalSec = Math.floor(totalSeconds % 60);
+            document.getElementById("total-time").innerHTML =
+            `Total time: <br> ${totalMin}m ${totalSec < 10 ? "0" : ""}${totalSec}s`;
+
+            //case if timer seconds are less than 10
+            if (seconds < 10) {
+                seconds = "0" + seconds;
+                }
+                  document.getElementById("timer").innerHTML = minutes + "m " + seconds + "s ";
+
+                  if (remaining <= 0) {
+                    clearInterval(x);
+                    cycleCount ++; //increment cycle count
+                    chevronAutoMove();
+                    changeCycleCount();
+                  }
+              }, 100);
+          }
+
+
+        //PAUSE TIMER LOGIC
+        function pauseFocus() {
+            clearInterval(x);
+            lastTick = null;
+            remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            isRunning = false;
+            }
+
+        //SWITCH PLAY BUTTON WITH PAUSE BUTTON
+        const actionButton = document.getElementById("actionButton");
+        actionButton.addEventListener("click", () => {
+          if (!isRunning) {
+            startFocus();
+            actionButton.textContent = "Pause";
+          } else {
+            pauseFocus();
+            actionButton.textContent = "Start";
+          }
+        });
+
+        //RESET TIMER LOGIC
+        function resetTimer() {
+          clearInterval(x);
+          remaining = MODES[currentMode];
+          const minutes = Math.floor(remaining / 60);
+          timerDisplay.innerHTML = `${minutes}m 00s`;
+          isRunning = false;
+          actionButton.textContent = "Start";
+        }
+
+        //TRACK FOCUS TIME
+        let focusSeconds = 0;
+        let totalSeconds = 0;
+        const focusTimeDisplay = document.getElementById("focus-time");
+        const totalTimeDisplay = document.getElementById("total-time");
+
+        //MOVE CHEVRON WHEN TIMER RUNS OUT
+        let cycleCount = 1; //tracks which phase of pomodoro cycle
+
+        function chevronAutoMove() {
+            let nextMode;
+
+            if (cycleCount % 8 === 0) {
+            nextMode = "longBreak";
+            activeButton = longBtn;
+            }
+            else if (cycleCount % 2 === 0) {
+            nextMode = "shortBreak";
+            activeButton = shortBtn;
+            }
+            else {
+            nextMode = "focus";
+            activeButton = focusBtn;
+            }
+
+            currentMode = nextMode;
+            switchMode(nextMode);
+            chevronMove();
+            }
+
+        //COUNT CYCLE
+        function changeCycleCount(){
+            if(cycleCount % 2 === 0) {
+            document.getElementById("cycle-count").textContent =
+            `Cycle count: ${cycleCount / 2}`;
+            }
+        }
+
+        //SWITCH BETWEEN VIEWPORT MODES
+        const focusTime = document.getElementById("focus-time");
+        const totalTime = document.getElementById("total-time");
+        const msg = document.getElementById("msg");
+
+        // ANALYTICS MODE
+        document.getElementById("analytics-md").addEventListener("click", () => {
+          focusTime.classList.add("show");
+          totalTime.classList.add("show");
+          msg.classList.remove("show");
+        });
+
+        // FOCUS MODE
+        document.getElementById("focus-md").addEventListener("click", () => {
+          focusTime.classList.remove("show");
+          totalTime.classList.remove("show");
+          msg.classList.add("show");
+        });
+
+        const infoModal = document.getElementById("info-modal");
+        const themesModal = document.getElementById("themes-modal");
+        const infoBtn = document.getElementById("info");
+        const themesBtn = document.getElementById("themes");
+        const closeBtn = document.getElementById("close-info");
+        const closeBtnT = document.getElementById("close-themes");
+
+        // open info modal
+        infoBtn.addEventListener("click", () => {
+          infoModal.classList.add("show");
+        });
+
+        // close with X
+        closeBtn.addEventListener("click", () => {
+          infoModal.classList.remove("show");
+        });
+
+        // close when clicking outside
+        infoModal.addEventListener("click", (e) => {
+          if (e.target === infoModal) {
+            infoModal.classList.remove("show");
+          }
+        });
+
+        // THEMES MODE
+        document.getElementById("themes").addEventListener("click", () => {
+            themesModal.classList.add("show");
+        });
+
+        // close with X
+        closeBtnT.addEventListener("click", () => {
+          themesModal.classList.remove("show");
+        });
+
+        // close when clicking outside
+        themesModal.addEventListener("click", (e) => {
+          if (e.target === themesModal) {
+            themesModal.classList.remove("show");
+          }
+        });
+
+       //BACKGROUND COLOUR THEMES
+       const simpleBtn = document.getElementById("simple-t");
+       const pinkBtn = document.getElementById("pink-t");
+       const blueBtn = document.getElementById("deep-t");
+
+       function setTheme(theme) {
+          document.body.className = theme;
+        }
+
+        // click handlers
+        simpleBtn.addEventListener("click", () => setTheme("simple"));
+        pinkBtn.addEventListener("click", () => setTheme("pink"));
+        blueBtn.addEventListener("click", () => setTheme("deep"));
+</script>
+</html>
